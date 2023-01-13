@@ -1,0 +1,81 @@
+
+
+private void Update()
+{
+    Ray ray = new Ray(transform.position, Vector3.down);
+    RaycastHit hit;
+    Debug.DrawRay(ray.origin, ray.direction * rayDistance, Color.red);
+
+    if(Physics.Raycast(ray, out hit, rayDistance, waterLayer)){
+        if(Physics.Raycast(ray, out hit, rayDistance, groundLayer)){
+            // Player is on both ground and water
+            Debug.Log("Player is on both ground and water");
+        } else{
+            // Player is in water
+            Debug.Log("Player is in water.");
+        }
+    } else if (Physics.Raycast(ray, out hit, rayDistance, groundLayer)){
+        // Player is on the ground
+        Debug.Log("Player is on the ground.");
+    }
+}
+
+
+//playerDetection
+
+using UnityEngine;
+
+public class PlayerDetection : MonoBehaviour
+{
+    public LayerMask groundLayer;
+    public LayerMask waterLayer;
+    public float rayDistance = 0.1f;
+
+    private void Update()
+    {
+        Ray ray = new Ray(transform.position, Vector3.down);
+        RaycastHit hit;
+        if(Physics.Raycast(ray, out hit, rayDistance, waterLayer)){
+            if(Physics.Raycast(ray, out hit, rayDistance, groundLayer)){
+                // Player is on both ground and water
+                Debug.Log("Player is on both ground and water");
+            } else{
+                // Player is in water
+                Debug.Log("Player is in water.");
+            }
+        } else if (Physics.Raycast(ray, out hit, rayDistance, groundLayer)){
+            // Player is on the ground
+            Debug.Log("Player is on the ground.");
+        }
+    }
+}
+
+//without raycast
+
+using UnityEngine;
+
+public class PlayerDetection : MonoBehaviour
+{
+    public LayerMask groundLayer;
+    public LayerMask waterLayer;
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (IsInLayerMask(other.gameObject, groundLayer))
+        {
+            // Player is on the ground
+            Debug.Log("Player is on the ground.");
+        }
+        else if (IsInLayerMask(other.gameObject, waterLayer))
+        {
+            // Player is in water
+            Debug.Log("Player is in water.");
+        }
+    }
+
+    private bool IsInLayerMask(GameObject obj, LayerMask layerMask)
+    {
+        return (layerMask.value & (1 << obj.layer)) != 0;
+    }
+}
+
